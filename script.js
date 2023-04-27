@@ -1,4 +1,7 @@
 async function buscaEndereco(cep){
+    let msgErro = document.getElementById('erro');
+    msgErro.innerHTML = "";
+
     try{
         var consultaCep = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
         var consultaCepConvertida = await consultaCep.json();
@@ -6,15 +9,21 @@ async function buscaEndereco(cep){
         if(consultaCepConvertida.erro){
             throw Error("CEP não encontrado!");
         }
-        
-        console.log(consultaCepConvertida);
+
+        let cidade = document.getElementById('cidade');
+        let endereco = document.getElementById('endereco');
+        let estado = document.getElementById('estado');
+
+        cidade.value = consultaCepConvertida.localidade;
+        endereco.value = consultaCepConvertida.logradouro;
+        estado.value = consultaCepConvertida.uf;
 
         return consultaCepConvertida;
     } catch (erro) {
+        msgErro.innerHTML = `<p>CEP inválido.</p>`
         console.log("CEP inválido!");
     }
 }
 
-// let ceps = ['01001000', '02556110'];
-// let conjuntoCeps = ceps.map(valores => buscaEndereco(valores));
-// Promise.all(conjuntoCeps).then(respostas => console.log(respostas));
+let cep = document.getElementById('cep');
+cep.addEventListener('focusout', () => buscaEndereco(cep.value));
